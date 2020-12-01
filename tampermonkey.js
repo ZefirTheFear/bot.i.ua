@@ -1,12 +1,17 @@
-const getCookie = (cookieName) => {
-  const results = document.cookie.match("(^|;) ?" + cookieName + "=([^;]*)(;|$)");
-  if (results) return unescape(results[2]);
-  else return null;
-};
-
 // auth
 // ----- for https://passport.i.ua/login/* -----
 const auth = () => {
+  const deleteCookie = (cookieName) => {
+    document.cookie = `${cookieName}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=i.ua`;
+  };
+
+  deleteCookie("adType1");
+  deleteCookie("adType2");
+  deleteCookie("adType3");
+  deleteCookie("adType4");
+  deleteCookie("adType5");
+  deleteCookie("adType6");
+
   const loginInput = document.querySelector('input[name="login"]');
   const passwordInput = document.querySelector('input[name="pass"]');
   const enterBtn = document.querySelector('input[value="Войти"]');
@@ -15,6 +20,26 @@ const auth = () => {
   const usd = new URLSearchParams(window.location.search).get("usd");
   const eur = new URLSearchParams(window.location.search).get("eur");
   const rub = new URLSearchParams(window.location.search).get("rub");
+
+  let temp = 1;
+  if (usd === "true") {
+    document.cookie = `adType${temp}=1;path=/;domain=i.ua`;
+    temp += 1;
+    document.cookie = `adType${temp}=2;path=/;domain=i.ua`;
+    temp += 1;
+  }
+  if (eur === "true") {
+    document.cookie = `adType${temp}=3;path=/;domain=i.ua`;
+    temp += 1;
+    document.cookie = `adType${temp}=4;path=/;domain=i.ua`;
+    temp += 1;
+  }
+  if (rub === "true") {
+    document.cookie = `adType${temp}=5;path=/;domain=i.ua`;
+    temp += 1;
+    document.cookie = `adType${temp}=6;path=/;domain=i.ua`;
+    temp += 1;
+  }
 
   document.cookie = `cleaningTimeout=${timeout};path=/;domain=i.ua`;
   document.cookie = `isUsdNeeded=${usd};path=/;domain=i.ua`;
@@ -103,28 +128,21 @@ const addOrDelete = () => {
     }
   };
 
-  // const startingAdType = isUsdNeeded ? 1 : isEurNeeded ? 3 : 5;
-  // let nextAdType = 0;
-  // if (delBtns.length === 1) {
-  //   nextAdType = isUsdNeeded ? 2 : isEurNeeded ? 4 : 6
-  // }
-  // if (delBtns.length === 2) {
-  //   nextAdType = isUsdNeeded ? 2 : isEurNeeded ? 4 : 6
-  // }
+  const firstAdType = getCookie("adType1");
+  const nextAdType = getCookie(`adType${delBtns.length + 1}`);
 
   if (mode === "deleteAds") {
     if (delBtns.length > 0) {
       deleteAds();
       return;
     } else {
-      // window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=${startingAdType}`);
-      window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=1`);
+      window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=${firstAdType}`);
       return;
     }
   }
 
   if (delBtns.length === 0) {
-    window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=1`);
+    window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=${firstAdType}`);
     return;
   }
 
@@ -137,9 +155,7 @@ const addOrDelete = () => {
       deleteAds();
       return;
     } else {
-      window.location.replace(
-        `https://finance.i.ua/market/add/?acc=${acc}&adType=${delBtns.length + 1}`
-      );
+      window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=${nextAdType}`);
       return;
     }
   }
@@ -156,7 +172,7 @@ const addOrDelete = () => {
       window.location.replace(
         `https://passport.i.ua/login/?acc=1&timeout=${cleaningTimeout}&usd=${isUsdNeeded}&eur=${isEurNeeded}&rub=${isRubNeeded}`
       );
-    setTimeout(newСycle, 1000 * 10);
+    setTimeout(newСycle, 1000 * cleaningTimeout);
   }
 };
 
@@ -165,7 +181,27 @@ window.addEventListener("load", addOrDelete);
 
 // create new ads
 // ----- for https://finance.i.ua/market/add/* -----
-const addNewAd = (acc, adType) => {
+
+const addNewAd = async (acc, adType) => {
+  let rates;
+  const getRates = async () => {
+    try {
+      const response = await fetch(
+        `https://exchange-currencies-obolon.firebaseio.com/currencies.json`
+      );
+      if (response.status !== 200) {
+        return console.log("не могу запросить курсы. ёбаный firebase");
+      }
+      const resData = await response.json();
+      rates = resData.rates.opt;
+    } catch (error) {
+      return console.log("не могу запросить курсы. ёбаный firebase");
+    }
+  };
+
+  await getRates();
+  console.log(rates);
+
   // тип операции
   if (adType === "1" || adType === "3" || adType === "5") {
     document.body
@@ -240,22 +276,28 @@ const addNewAd = (acc, adType) => {
   // тут будет запрос
   switch (adType) {
     case "1":
-      ratio = 28.6;
+      // ratio = 28.6;
+      ratio = rates.usd.sell;
       break;
     case "2":
-      ratio = 28.4;
+      // ratio = 28.4;
+      ratio = rates.usd.buy;
       break;
     case "3":
-      ratio = 34.1;
+      // ratio = 34.1;
+      ratio = rates.eur.sell;
       break;
     case "4":
-      ratio = 33.8;
+      // ratio = 33.8;
+      ratio = rates.eur.buy;
       break;
     case "5":
-      ratio = 0.375;
+      // ratio = 0.375;
+      ratio = rates.rub.sell;
       break;
     case "6":
-      ratio = 0.362;
+      // ratio = 0.362;
+      ratio = rates.rub.buy;
       break;
 
     default:

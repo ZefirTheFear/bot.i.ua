@@ -1,3 +1,14 @@
+// заходим на "https://passport.i.ua/login/?acc=1", входим в нужный акк
+// перекидывает в "https://i.ua"
+// переходим на "https://finance.i.ua/market/kiev/?mode=deleteAds",
+// 1)если есть объявы, то удаляем объяву
+// перекидывает на "https://finance.i.ua/market/kiev/?",
+// смотрим document.refferer, если этот же, то удаляем остальные объявы
+// 2) если объяв нет или когда объяв стало === 0, то начинаем создавать, проверяя document.refferer
+// когда создали все объявы, то проверяем юзера и
+// 1) если не последний, то переходим в "https://passport.i.ua/login/?acc=${nextUser}"
+// 2) если последний, то ждем нужное время и после этого переходим на "https://passport.i.ua/login/?acc=1"
+
 // // auth
 // const auth = async () => {
 //   const formData = new FormData();
