@@ -1,21 +1,36 @@
+const getCookie = (cookieName) => {
+  const results = document.cookie.match("(^|;) ?" + cookieName + "=([^;]*)(;|$)");
+  if (results) return unescape(results[2]);
+  else return null;
+};
+
 // auth
 // ----- for https://passport.i.ua/login/* -----
-// TODO localStorage
 const auth = () => {
   const loginInput = document.querySelector('input[name="login"]');
   const passwordInput = document.querySelector('input[name="pass"]');
   const enterBtn = document.querySelector('input[value="Войти"]');
+
+  const timeout = new URLSearchParams(window.location.search).get("timeout");
+  const usd = new URLSearchParams(window.location.search).get("usd");
+  const eur = new URLSearchParams(window.location.search).get("eur");
+  const rub = new URLSearchParams(window.location.search).get("rub");
+
+  document.cookie = `cleaningTimeout=${timeout};path=/;domain=i.ua`;
+  document.cookie = `isUsdNeeded=${usd};path=/;domain=i.ua`;
+  document.cookie = `isEurNeeded=${eur};path=/;domain=i.ua`;
+  document.cookie = `isRubNeeded=${rub};path=/;domain=i.ua`;
 
   const acc = new URLSearchParams(window.location.search).get("acc");
   switch (acc) {
     case "1":
       loginInput.value = "k.l.i.m";
       passwordInput.value = "worldofwarcraft";
-      return;
+      break;
     case "2":
       loginInput.value = "operta";
       passwordInput.value = "zkk3344";
-      return;
+      break;
 
     default:
       break;
@@ -47,13 +62,35 @@ const addOrDelete = () => {
   switch (userId) {
     case "345609":
       acc = 1;
-      return;
+      break;
     case "11521148":
       acc = 2;
-      return;
+      break;
 
     default:
       break;
+  }
+
+  const getCookie = (cookieName) => {
+    const results = document.cookie.match("(^|;) ?" + cookieName + "=([^;]*)(;|$)");
+    if (results) return unescape(results[2]);
+    else return null;
+  };
+
+  const cleaningTimeout = getCookie("cleaningTimeout");
+
+  let maxAdsAmount = 0;
+  const isUsdNeeded = getCookie("isUsdNeeded");
+  const isEurNeeded = getCookie("isEurNeeded");
+  const isRubNeeded = getCookie("isRubNeeded");
+  if (isUsdNeeded === "true") {
+    maxAdsAmount += 2;
+  }
+  if (isEurNeeded === "true") {
+    maxAdsAmount += 2;
+  }
+  if (isRubNeeded === "true") {
+    maxAdsAmount += 2;
   }
 
   window.confirm = () => true;
@@ -66,11 +103,21 @@ const addOrDelete = () => {
     }
   };
 
+  // const startingAdType = isUsdNeeded ? 1 : isEurNeeded ? 3 : 5;
+  // let nextAdType = 0;
+  // if (delBtns.length === 1) {
+  //   nextAdType = isUsdNeeded ? 2 : isEurNeeded ? 4 : 6
+  // }
+  // if (delBtns.length === 2) {
+  //   nextAdType = isUsdNeeded ? 2 : isEurNeeded ? 4 : 6
+  // }
+
   if (mode === "deleteAds") {
     if (delBtns.length > 0) {
       deleteAds();
       return;
     } else {
+      // window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=${startingAdType}`);
       window.location.replace(`https://finance.i.ua/market/add/?acc=${acc}&adType=1`);
       return;
     }
@@ -81,7 +128,7 @@ const addOrDelete = () => {
     return;
   }
 
-  if (delBtns.length > 0 && delBtns.length < 6) {
+  if (delBtns.length > 0 && delBtns.length < maxAdsAmount) {
     const prevPage = document.referrer;
     if (
       prevPage === "https://finance.i.ua/market/kiev/?" ||
@@ -98,11 +145,18 @@ const addOrDelete = () => {
   }
 
   if (acc < 2) {
-    window.location.replace(`https://passport.i.ua/login/?acc=${acc + 1}`);
+    window.location.replace(
+      `https://passport.i.ua/login/?acc=${
+        acc + 1
+      }&timeout=${cleaningTimeout}&usd=${isUsdNeeded}&eur=${isEurNeeded}&rub=${isRubNeeded}`
+    );
     return;
   } else {
-    const timeout = localStorage.getItem("timeout");
-    setTimeout(deleteAds, timeout ? timeout : 1000 * 60 * 5);
+    const newСycle = () =>
+      window.location.replace(
+        `https://passport.i.ua/login/?acc=1&timeout=${cleaningTimeout}&usd=${isUsdNeeded}&eur=${isEurNeeded}&rub=${isRubNeeded}`
+      );
+    setTimeout(newСycle, 1000 * 10);
   }
 };
 
@@ -128,40 +182,40 @@ const addNewAd = (acc, adType) => {
   switch (acc + "-" + adType) {
     case "1-1":
       sum = 100;
-      return;
+      break;
     case "1-2":
       sum = 100;
-      return;
+      break;
     case "1-3":
       sum = 100;
-      return;
+      break;
     case "1-4":
       sum = 100;
-      return;
+      break;
     case "1-5":
       sum = 100;
-      return;
+      break;
     case "1-6":
       sum = 100;
-      return;
+      break;
     case "2-1":
       sum = 100;
-      return;
+      break;
     case "2-2":
       sum = 100;
-      return;
+      break;
     case "2-3":
       sum = 100;
-      return;
+      break;
     case "2-4":
       sum = 100;
-      return;
+      break;
     case "2-5":
       sum = 100;
-      return;
+      break;
     case "2-6":
       sum = 100;
-      return;
+      break;
 
     default:
       break;
@@ -187,22 +241,22 @@ const addNewAd = (acc, adType) => {
   switch (adType) {
     case "1":
       ratio = 28.6;
-      return;
+      break;
     case "2":
       ratio = 28.4;
-      return;
+      break;
     case "3":
       ratio = 34.1;
-      return;
+      break;
     case "4":
       ratio = 33.8;
-      return;
+      break;
     case "5":
       ratio = 0.375;
-      return;
+      break;
     case "6":
       ratio = 0.362;
-      return;
+      break;
 
     default:
       break;
@@ -214,10 +268,10 @@ const addNewAd = (acc, adType) => {
   switch (acc) {
     case "1":
       district = "Минская. Петровка. Оболонь. Дрим таун.";
-      return;
+      break;
     case "2":
       district = "Вокзал, ул.Петлюры";
-      return;
+      break;
 
     default:
       break;
@@ -235,10 +289,10 @@ const addNewAd = (acc, adType) => {
   switch (acc) {
     case "1":
       comment = "частями. Меняем Канаду, Франк, Фунт, Злотый";
-      return;
+      break;
     case "2":
       comment = "Меняем Канаду, Франк, Фунт, Злотый. частями. ";
-      return;
+      break;
 
     default:
       break;
