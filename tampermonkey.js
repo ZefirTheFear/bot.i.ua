@@ -49,12 +49,16 @@ const auth = () => {
   const acc = new URLSearchParams(window.location.search).get("acc");
   switch (acc) {
     case "1":
-      loginInput.value = "k.l.i.m";
-      passwordInput.value = "worldofwarcraft";
+      loginInput.value = atob("b3BlcnRh");
+      passwordInput.value = atob("emtrMzM0NA==");
       break;
     case "2":
-      loginInput.value = "operta";
-      passwordInput.value = "zkk3344";
+      loginInput.value = atob("bmV0bGk=");
+      passwordInput.value = atob("cG9zdGVy");
+      break;
+    case "3":
+      loginInput.value = atob("Z2F6aWxsYQ==");
+      passwordInput.value = atob("cHJpdmV0MjI=");
       break;
 
     default:
@@ -85,11 +89,14 @@ const addOrDelete = () => {
   const userId = tempArr[tempArr.length - 2];
   let acc;
   switch (userId) {
-    case "345609":
+    case "11521148":
       acc = 1;
       break;
-    case "11521148":
+    case "11522565":
       acc = 2;
+      break;
+    case "11611824":
+      acc = 3;
       break;
 
     default:
@@ -160,7 +167,18 @@ const addOrDelete = () => {
     }
   }
 
-  if (acc < 2) {
+  if (delBtns.length >= maxAdsAmount) {
+    const prevPage = document.referrer;
+    if (
+      prevPage === "https://finance.i.ua/market/kiev/?" ||
+      prevPage === "https://finance.i.ua/market/kiev/?mode=deleteAds"
+    ) {
+      deleteAds();
+      return;
+    }
+  }
+
+  if (acc < 3) {
     window.location.replace(
       `https://passport.i.ua/login/?acc=${
         acc + 1
@@ -181,7 +199,6 @@ window.addEventListener("load", addOrDelete);
 
 // create new ads
 // ----- for https://finance.i.ua/market/add/* -----
-
 const addNewAd = async (acc, adType) => {
   let rates;
   const getRates = async () => {
@@ -217,40 +234,58 @@ const addNewAd = async (acc, adType) => {
   let sum;
   switch (acc + "-" + adType) {
     case "1-1":
-      sum = 100;
+      sum = 25000;
       break;
     case "1-2":
-      sum = 100;
+      sum = 25000;
       break;
     case "1-3":
-      sum = 100;
+      sum = 10000;
       break;
     case "1-4":
-      sum = 100;
+      sum = 10000;
       break;
     case "1-5":
-      sum = 100;
+      sum = 500000;
       break;
     case "1-6":
-      sum = 100;
+      sum = 500000;
       break;
     case "2-1":
-      sum = 100;
+      sum = 30000;
       break;
     case "2-2":
-      sum = 100;
+      sum = 30000;
       break;
     case "2-3":
-      sum = 100;
+      sum = 20000;
       break;
     case "2-4":
-      sum = 100;
+      sum = 20000;
       break;
     case "2-5":
-      sum = 100;
+      sum = 700000;
       break;
     case "2-6":
-      sum = 100;
+      sum = 700000;
+      break;
+    case "3-1":
+      sum = 33000;
+      break;
+    case "3-2":
+      sum = 33000;
+      break;
+    case "3-3":
+      sum = 15000;
+      break;
+    case "3-4":
+      sum = 15000;
+      break;
+    case "3-5":
+      sum = 600000;
+      break;
+    case "3-6":
+      sum = 600000;
       break;
 
     default:
@@ -273,30 +308,23 @@ const addNewAd = async (acc, adType) => {
 
   // курс
   let ratio;
-  // тут будет запрос
   switch (adType) {
     case "1":
-      // ratio = 28.6;
       ratio = rates.usd.sell;
       break;
     case "2":
-      // ratio = 28.4;
       ratio = rates.usd.buy;
       break;
     case "3":
-      // ratio = 34.1;
       ratio = rates.eur.sell;
       break;
     case "4":
-      // ratio = 33.8;
       ratio = rates.eur.buy;
       break;
     case "5":
-      // ratio = 0.375;
       ratio = rates.rub.sell;
       break;
     case "6":
-      // ratio = 0.362;
       ratio = rates.rub.buy;
       break;
 
@@ -309,10 +337,13 @@ const addNewAd = async (acc, adType) => {
   let district;
   switch (acc) {
     case "1":
-      district = "Минская. Петровка. Оболонь. Дрим таун.";
+      district = "Жилянская, Петлюры, Центр, пл. Победы";
       break;
     case "2":
-      district = "Вокзал, ул.Петлюры";
+      district = "Университет. Вокзальная. Саксаганского. Жилянская. Петлюры. Бульвар Шевченко.";
+      break;
+    case "3":
+      district = "ЦИРК. пл Победы. Университет. Вокзальная. Жилянская. Саксаганского.";
       break;
 
     default:
@@ -323,17 +354,21 @@ const addNewAd = async (acc, adType) => {
   //город
   document.body
     .querySelector("#market_record_location_id")
-    .querySelector('option[value="12706"]').selected = true;
-  // .querySelector('option[value="10101"]').selected = true;
+    .querySelector('option[value="10101"]').selected = true;
+  // .querySelector('option[value="12706"]').selected = true;
 
   //комментарий
   let comment;
   switch (acc) {
     case "1":
-      comment = "частями. Меняем Канаду, Франк, Фунт, Злотый";
+      comment = "Обменный пункт. Покупка/продажа криптовалют. Биткоин. Безопасно, быстро, удобно.";
       break;
     case "2":
-      comment = "Меняем Канаду, Франк, Фунт, Злотый. частями. ";
+      comment = "покупаем и продаем биткоин. Обмен криптовалют. BTC, USDT, ETH. Наличные валюты.";
+      break;
+    case "3":
+      comment =
+        "Usd, Eur, Rub, Cad, Chf, Gbp, Pln. Прием купюр в любом состоянии. Обмен криптовалют. Биткоин, тезер, эфир. Безопасно. Быстро. Всегда есть наличие.";
       break;
 
     default:
