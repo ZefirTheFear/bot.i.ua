@@ -11,6 +11,7 @@ const auth = () => {
   deleteCookie("adType4");
   deleteCookie("adType5");
   deleteCookie("adType6");
+  deleteCookie("mode");
 
   const loginInput = document.querySelector('input[name="login"]');
   const passwordInput = document.querySelector('input[name="pass"]');
@@ -20,6 +21,12 @@ const auth = () => {
   const usd = new URLSearchParams(window.location.search).get("usd");
   const eur = new URLSearchParams(window.location.search).get("eur");
   const rub = new URLSearchParams(window.location.search).get("rub");
+
+  const mode = new URLSearchParams(window.location.search).get("mode");
+
+  if (mode === "stop") {
+    document.cookie = `mode=stop;path=/;domain=i.ua`;
+  }
 
   let temp = 1;
   if (usd === "true") {
@@ -60,6 +67,10 @@ const auth = () => {
       loginInput.value = atob("Z2F6aWxsYQ==");
       passwordInput.value = atob("cHJpdmV0MjI=");
       break;
+    case "4":
+      loginInput.value = atob("ZHJvemRvdmk0");
+      passwordInput.value = atob("ZHJvemQwMTAx");
+      break;
 
     default:
       break;
@@ -98,6 +109,9 @@ const addOrDelete = () => {
     case "11611824":
       acc = 3;
       break;
+    case "12177244":
+      acc = 4;
+      break;
 
     default:
       break;
@@ -107,6 +121,10 @@ const addOrDelete = () => {
     const results = document.cookie.match("(^|;) ?" + cookieName + "=([^;]*)(;|$)");
     if (results) return unescape(results[2]);
     else return null;
+  };
+
+  const deleteCookie = (cookieName) => {
+    document.cookie = `${cookieName}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=i.ua`;
   };
 
   const cleaningTimeout = getCookie("cleaningTimeout");
@@ -137,6 +155,28 @@ const addOrDelete = () => {
 
   const firstAdType = getCookie("adType1");
   const nextAdType = getCookie(`adType${delBtns.length + 1}`);
+
+  // ---
+  const cookieMode = getCookie("mode");
+  if (cookieMode === "stop") {
+    if (delBtns.length > 0) {
+      deleteAds();
+      return;
+    } else {
+      if (acc < 4) {
+        window.location.replace(
+          `https://passport.i.ua/login/?acc=${
+            acc + 1
+          }&timeout=${cleaningTimeout}&usd=${isUsdNeeded}&eur=${isEurNeeded}&rub=${isRubNeeded}&mode=stop`
+        );
+        return;
+      } else {
+        deleteCookie("mode");
+        window.close();
+      }
+    }
+  }
+  // ---
 
   if (mode === "deleteAds") {
     if (delBtns.length > 0) {
@@ -178,7 +218,7 @@ const addOrDelete = () => {
     }
   }
 
-  if (acc < 3) {
+  if (acc < 4) {
     window.location.replace(
       `https://passport.i.ua/login/?acc=${
         acc + 1
@@ -217,7 +257,6 @@ const addNewAd = async (acc, adType) => {
   };
 
   await getRates();
-  console.log(rates);
 
   // тип операции
   if (adType === "1" || adType === "3" || adType === "5") {
@@ -287,6 +326,24 @@ const addNewAd = async (acc, adType) => {
     case "3-6":
       sum = 600000;
       break;
+    case "4-1":
+      sum = 29000;
+      break;
+    case "4-2":
+      sum = 29000;
+      break;
+    case "4-3":
+      sum = 17000;
+      break;
+    case "4-4":
+      sum = 17000;
+      break;
+    case "4-5":
+      sum = 450000;
+      break;
+    case "4-6":
+      sum = 450000;
+      break;
 
     default:
       break;
@@ -345,6 +402,9 @@ const addNewAd = async (acc, adType) => {
     case "3":
       district = "ЦИРК. пл Победы. Университет. Вокзальная. Жилянская. Саксаганского.";
       break;
+    case "4":
+      district = "Центр. Коминтерна. Саксаганского. Университет.";
+      break;
 
     default:
       break;
@@ -369,6 +429,9 @@ const addNewAd = async (acc, adType) => {
     case "3":
       comment =
         "Usd, Eur, Rub, Cad, Chf, Gbp, Pln. Прием купюр в любом состоянии. Обмен криптовалют. Биткоин, тезер, эфир. Безопасно. Быстро. Всегда есть наличие.";
+      break;
+    case "4":
+      comment = "Безопасно. Всегда есть наличие. Прием поврежденных купюр. Криптовалюты.";
       break;
 
     default:

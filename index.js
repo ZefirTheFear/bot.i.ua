@@ -1,4 +1,7 @@
+let startWindow, stopWindow;
+
 const startBtn = document.querySelector("#start");
+const stopBtn = document.querySelector("#stop");
 
 const timeoutInput = document.querySelector("#timeoutInput");
 const usdInp = document.querySelector("#usdInp");
@@ -19,10 +22,19 @@ const onChangeInp = () => {
 
 const start = () => {
   const loginUrl = `https://passport.i.ua/login/?acc=1&timeout=${timeoutInput.value}&usd=${usdInp.checked}&eur=${eurInp.checked}&rub=${rubInp.checked}`;
-  window.open(loginUrl);
+  startWindow = window.open(loginUrl);
+};
+
+const stop = () => {
+  if (startWindow) {
+    startWindow.close();
+  }
+  const stopUrl = `https://passport.i.ua/login/?acc=1&timeout=${timeoutInput.value}&usd=${usdInp.checked}&eur=${eurInp.checked}&rub=${rubInp.checked}&mode=stop`;
+  stopWindow = window.open(stopUrl);
 };
 
 startBtn.addEventListener("click", start);
+stopBtn.addEventListener("click", stop);
 timeoutInput.addEventListener("input", onChangeInp);
 usdInp.addEventListener("input", onChangeInp);
 eurInp.addEventListener("input", onChangeInp);
